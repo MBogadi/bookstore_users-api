@@ -1,6 +1,9 @@
 package main
 
-func main() {
-	//app.StartApplication()
+import (
+	"./app"
+)
 
+func main() {
+	app.StartApplication()
 }
