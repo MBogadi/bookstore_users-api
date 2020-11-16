@@ -4,17 +4,23 @@ import (
 	"../domain/users"
 	"../services"
 	"../utils/errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func GetUser(c *gin.Context) {
-	bytes, err := ioutil.ReadAll(c.Request.Body)
-	fmt.Println(err)
-	fmt.Println(string(bytes))
-	c.String(http.StatusNotImplemented, "Please Implement me!")
+	userid, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		restError := errors.NewBadRequestError("Missing user_id in request")
+		c.JSON(restError.Status, restError)
+	}
+	user, getError := services.GetUser(userid)
+	if getError != nil {
+		c.JSON(getError.Status, getError)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 func CreateUser(c *gin.Context) {
@@ -42,7 +48,6 @@ func CreateUser(c *gin.Context) {
 		c.JSON(restError.Status, restError)
 		return
 	}
-	fmt.Println(user)
 
 	result, saveErr := services.CreateUser(user)
 	if saveErr != nil {
@@ -52,8 +57,4 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
-}
-
-func SearchUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "Please Implement me!")
 }
