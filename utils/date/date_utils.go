@@ -9,5 +9,6 @@ func GetNowUTC() time.Time {
 }
 
 func GetNowString() string {
-	return GetNowUTC().Format(time.RFC3339)
+	//return GetNowUTC().Format(time.RFC3339)
+	return GetNowUTC().Format("2006-01-02 15:04:05")
 }
