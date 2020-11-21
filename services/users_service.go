@@ -30,3 +30,38 @@ func GetUser(userID int64) (*users.User, *errors.RestError) {
 	// Found
 	return &user, nil
 }
+
+func UpdateUser(user *users.User) (*users.User, *errors.RestError) {
+	currentUser, getError := GetUser(user.Id)
+	if getError != nil {
+		return nil, getError
+	}
+
+	if user.FirstName != "" {
+		currentUser.FirstName = user.FirstName
+	}
+	if user.LastName != "" {
+		currentUser.LastName = user.LastName
+	}
+	if user.Email != "" {
+		currentUser.Email = user.Email
+	}
+
+	err := currentUser.Update()
+	if err != nil {
+		return nil, err
+	}
+
+	// updated
+	return currentUser, nil
+}
+
+func DeleteUser(user *users.User) *errors.RestError {
+	err := user.Delete()
+	if err != nil {
+		return err
+	}
+
+	// Deleted
+	return nil
+}

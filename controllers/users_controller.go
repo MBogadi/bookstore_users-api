@@ -9,38 +9,8 @@ import (
 	"strconv"
 )
 
-func GetUser(c *gin.Context) {
-	userid, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		restError := errors.NewBadRequestError("Missing user_id in request")
-		c.JSON(restError.Status, restError)
-	}
-	user, getError := services.GetUser(userid)
-	if getError != nil {
-		c.JSON(getError.Status, getError)
-		return
-	}
-	c.JSON(http.StatusOK, user)
-}
-
 func CreateUser(c *gin.Context) {
 	var user users.User
-	/*
-		bytes, err := ioutil.ReadAll(c.Request.Body)
-		if err != nil {
-			//Error handler
-			fmt.Println("IO ReadAll error: ", err)
-			return
-		}
-
-		if err := json.Unmarshal(bytes, &user); err != nil {
-			//Error handler
-			fmt.Println("JSON Unmarshal error: ", err)
-			return
-		}
-		fmt.Printf("Bytes: %v", string(bytes))
-		fmt.Println("")
-	*/
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		//error handler
@@ -57,4 +27,61 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func GetUser(c *gin.Context) {
+	userid, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		restError := errors.NewBadRequestError("Missing user_id in request")
+		c.JSON(restError.Status, restError)
+	}
+	user, getError := services.GetUser(userid)
+	if getError != nil {
+		c.JSON(getError.Status, getError)
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
+func UpdateUser(c *gin.Context) {
+	userid, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		restError := errors.NewBadRequestError("Missing user_id in request")
+		c.JSON(restError.Status, restError)
+	}
+
+	var updateUser users.User
+	if err := c.ShouldBindJSON(&updateUser); err != nil {
+		//error handler
+		restError := errors.NewBadRequestError("Invalid input JSON")
+		c.JSON(restError.Status, restError)
+		return
+	}
+
+	updateUser.Id = userid
+	updatedUser, updateError := services.UpdateUser(&updateUser)
+	if updateError != nil {
+		c.JSON(updateError.Status, updateError)
+		return
+	}
+	c.JSON(http.StatusOK, updatedUser)
+}
+
+func DeleteUser(c *gin.Context) {
+	userid, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		restError := errors.NewBadRequestError("Missing user_id in request")
+		c.JSON(restError.Status, restError)
+	}
+
+	var deleteUser users.User
+	deleteUser.Id = userid
+
+	deleteError := services.DeleteUser(&deleteUser)
+	if deleteError != nil {
+		c.JSON(deleteError.Status, deleteError)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
