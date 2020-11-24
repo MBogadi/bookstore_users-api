@@ -85,3 +85,19 @@ func DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
+
+func FindByStatus(c *gin.Context) {
+	status := c.Query("status")
+
+	if status == "" {
+		restError := errors.NewBadRequestError("Missing status in request")
+		c.JSON(restError.Status, restError)
+	}
+
+	users, searchError := services.FindByStatus(status)
+	if searchError != nil {
+		c.JSON(searchError.Status, searchError)
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}

@@ -31,6 +31,18 @@ func GetUser(userID int64) (*users.User, *errors.RestError) {
 	return &user, nil
 }
 
+func FindByStatus(status string) ([]users.User, *errors.RestError) {
+	var user users.User
+	foundUsers, err := user.FindByStatus(status)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Return rows
+	return foundUsers, nil
+}
+
 func UpdateUser(user *users.User) (*users.User, *errors.RestError) {
 	currentUser, getError := GetUser(user.Id)
 	if getError != nil {

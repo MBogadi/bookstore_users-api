@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	errorNoRows = "no rows in resultset"
+	errorNoRows = "no rows in result set"
 )
 
 func ParseError(err error) *errors.RestError {
